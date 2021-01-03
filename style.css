@@ -39,6 +39,7 @@ button {
 
 .game__button {
   margin: 10px;
+  visibility: visible;
 }
 
 .game__timer {
@@ -70,7 +71,7 @@ button {
   height: 100%;
 }
 .pop-up {
-  display: none;
+  display: block;
   text-align: center;
   padding: 20px;
   margin: auto;
@@ -82,9 +83,8 @@ button {
   transform: translateY(-300px);
 }
 
-.pop-up.hide {
+.pop-up-hide {
   display: none;
-  margin: auto;
 }
 
 .refresh__button {

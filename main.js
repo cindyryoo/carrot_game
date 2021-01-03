@@ -12,13 +12,16 @@ let timer = undefined;
 const gameBtn = document.querySelector('.game__button');
 const gameTimer = document.querySelector('.game__timer');
 const gameScore = document.querySelector('.game__score');
+
 const popUp = document.querySelector('.pop-up');
+const popUpMsg = document.querySelector('.pop-up__msg');
 const refreshBtn = document.querySelector('.refresh__button');
+
 const field = document.querySelector('.game__field');
 const fieldRecht = field.getBoundingClientRect();
 
 
-
+field.addEventListener('click',onFieldClick);
 gameBtn.addEventListener('click', () => {
     if(isPlaying) {
         stopGame();
@@ -28,13 +31,22 @@ gameBtn.addEventListener('click', () => {
     isPlaying = !isPlaying;
 });
 
+refreshBtn.addEventListener('click', () => {
+    startGame();
+})
+
 function startGame() {
     initGame();
     showStopBtn();
     showTimerAndScore();
     startGameTimer();
 }
-function stopGame() {}
+function stopGame() {
+    stopGameTimer();
+    hideGameButton();
+    showPopUp('REPLAY?');
+    restart();
+}
 
 function showTimerAndScore() {
     gameTimer.style.visibility = 'visible';
@@ -47,6 +59,7 @@ function startGameTimer() {
     timer = setInterval(() => {
         if(remainingTimeSec <= 0) {
             clearInterval(timer);
+            finishGame(CARROT_COUNT === score);
             return;
         }
         updateTimerText(--remainingTimeSec);
@@ -59,11 +72,24 @@ function updateTimerText(time) {
     gameTimer.innerText = `0 : ${time}`;
 }
 
+function stopGameTimer(){
+    clearInterval(timer);
+}
+
 
 function showStopBtn(){
     const icon = gameBtn.querySelector('.fa-play');
     icon.classList.add('fa-stop');
     icon.classList.remove('fa-play');
+}
+
+function hideGameButton() {
+    gameBtn.style.visibility = 'hidden';
+}
+
+function showPopUp(text) {
+    popUpMsg.innerText = text;
+    popUp.classList.remove('pop-up-hide');
 }
 
 function initGame(src , width, height , alt) {
@@ -74,13 +100,33 @@ function initGame(src , width, height , alt) {
 
 }
 
+function onFieldClick(event) {
 
+    if(!isPlaying) {
+        return;
+    }
+    const target = event.target;
+    if(target.matches('.carrot')) {
+        target.remove();
+        score++;
+        updateScoreBoard();
+        if(score === CARROT_COUNT) {
+            finishGame(true);
+        }
+    }else if(target.matches('.bug')){
+        stopGameTimer();
+        finishGame(false);
+    }
+}
 
-
-
-
-
-
+function updateScoreBoard() {
+    gameScore.innerText = CARROT_COUNT - score;
+}
+function finishGame(win) {
+    isPlaying = false;
+    hideGameButton();
+    showPopUp(win? 'YOU WON 🎉' : 'YOU LOST 👎🏻 ');
+}
 
 function addItem(className, count , imgSrc) {
     const x1 = 0;
